@@ -1,9 +1,10 @@
-class Plosca:
+class Plosca():
 
     def __init__(self, visina=6, sirina=6):
         self.visina = visina
         self.sirina = sirina
         self.poteze = 0
+        self.plosca = [[' '] * self.visina for _ in range(self.sirina)]
         self.belefigure = [(1,1), (1,2), (2,1), (2,2)]
         self.crnefigure = [(5,5), (5,6), (6,5), (6,6)]
 
@@ -17,9 +18,9 @@ class Plosca:
         for _ in range(self.visina):
             polja.append(self.sirina * [' '])
         for vrstica, stolpec in self.belefigure:
-            polja[vrstica][stolpec] = 'O'
+            polja[vrstica - 1][stolpec - 1] = 'O'
         for vrstica, stolpec in self.crnefigure:
-            polja[vrstica][stolpec] = 'X'
+            polja[vrstica - 1][stolpec - 1] = 'X'
 
         niz = ''
         rob = '+' + self.sirina * '-' + '+\n'
@@ -27,17 +28,34 @@ class Plosca:
             niz += '|' + ''.join(vrstica) + '|\n'
         return rob + niz + rob
 
+    def je_prosto(self, x, y):
+        return self.plosca[x][y] == ' '
+
+
+
+
     def prestavi_figuro(self, x, y):
-        if (x, y) & self.zasedena_polja
+        if 0 < x <= 6 and 0 < y <= 6 and je_prosto(x, y):
+            if (abs(self.x - x) == 1 and y == self.y) or (abs(self.y - y) == 1 and self.x == x):
+                self.x , self.y = x, y
+                return True
+            elif (abs(self.x - x) == 2 and y == self.y) and not je_prosto(x + 1, y):
+                self.x, self.y = x, y
+                return True
+            elif (abs(self.y - y) == 2 and self.x == x) and not je_prosto(x, y + 1):
+                self.x, self.y = x, y
+                return True
+            else:
+                return False
+        else:
+            return False
+
+plosca = Plosca()
 
 
-    def zasedena_polja(self):
-        zasedena = set()
-        for figura in self.belefigure:
-            zasedena.update(figura.zasedena_polja())
-        for figura in self.crnefigure:
-            zasedena.update(figura.zasedena_polja())
-        return zasedena
+
+print(plosca)
+print(plosca.je_prosto(,))
 
 
 
@@ -54,25 +72,3 @@ class Figura:
 
     def __str__(self):
         return '{0} figura na polju ({1}, {2})'.format(self.barva, self.x, self.y)
-
-    def prestavi_figuro(self, x, y):
-        if je_veljavna_poteza(self, x, y):
-            self.x = x
-            self.y = y
-            self.stevec += 1
-            if self.stevec == 3:
-                self.stevec = 0
-
-
-
-    def je_veljavna_poteza(self, x, y):
-        if 0 <= x < 7 and 0 <= y < 7:
-            if polje[x, y] == 0:
-                polje[self.x, self.y] = 0
-                polje[x, y] = 1
-                return True
-            else:
-                return False
-
-    def je_na_potezi(self):
-        return self.barva == BARVA
