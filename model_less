@@ -21,10 +21,10 @@ class Plosca:
         self.poteze = 3
         self.plosca = [[' '] * self.visina for _ in range(self.sirina)]
         self.igralec = 'O'
-        for vrstica, stolpec in ZACETNAPOLJABELI:
-            self.plosca[stolpec - 1][vrstica - 1] = 'O'
+        for stolpec, vrstica in ZACETNAPOLJABELI:
+            self.plosca[vrstica - 1][stolpec - 1] = 'O'
         for vrstica, stolpec in ZACETNAPOLJACRNI:
-            self.plosca[stolpec - 1][vrstica - 1] = 'X'
+            self.plosca[vrstica - 1][stolpec - 1] = 'X'
 
 
     def __repr__(self):
@@ -70,7 +70,7 @@ class Plosca:
         for i in range(self.visina):
             for j in range(self.sirina):
                 if self.plosca[i][j] == igralec:
-                    sez.update((i + 1, j + 1))
+                    sez.update((j + 1, i + 1))
         return sez
 
     def zmaga(self, igralec):
@@ -80,5 +80,3 @@ class Plosca:
             return True
         else:
             return False
-
-
