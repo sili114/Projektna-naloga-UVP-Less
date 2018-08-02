@@ -10,8 +10,8 @@ class Figura:
     def __str__(self):
         return '{0} figura na polju ({1}, {2})'.format(self.barva, self.x, self.y)
 
-ZACETNAPOLJABELI = {(1, 1), (1, 2), (2, 1), (2, 2)}
-ZACETNAPOLJACRNI = {(5, 5), (5, 6), (6, 5), (6, 6)}
+ZACETNAPOLJABELI = {(0, 0), (1, 0), (0, 1), (1, 1)}
+ZACETNAPOLJACRNI = {(5, 5), (5, 4), (4, 5), (4, 4)}
 
 class Plosca:
 
@@ -21,10 +21,16 @@ class Plosca:
         self.poteze = 3
         self.plosca = [[' '] * self.visina for _ in range(self.sirina)]
         self.igralec = 'O'
-        for stolpec, vrstica in ZACETNAPOLJABELI:
-            self.plosca[vrstica - 1][stolpec - 1] = 'O'
+        self.izbrana_figura = None
+        self.belefigure = []
+        self.crnefigure = []
+        for vrstica, stolpec in ZACETNAPOLJABELI:
+            self.plosca[vrstica][stolpec] = '0'
+            self.belefigure.append((stolpec, vrstica))
         for vrstica, stolpec in ZACETNAPOLJACRNI:
-            self.plosca[vrstica - 1][stolpec - 1] = 'X'
+            self.plosca[vrstica][stolpec] = 'X'
+            self.crnefigure.append((stolpec, vrstica))
+
 
 
     def __repr__(self):
@@ -41,27 +47,33 @@ class Plosca:
         return rob + niz + rob + ' 123456'
 
     def je_prosto(self, x, y):
-        return self.plosca[x - 1][y - 1] == ' '
+        return self.plosca[x][y] == ' '
 
+    def izberi_figuro(self, x, y):
+        if not self.izbrana_figura and self.igralec == self.plosca[y][x]:
+            self.izbrana_figura = (x, y)
 
-    def prestavi_figuro(self, x1, y1, x, y):
-        if self.igralec == self.plosca[y1 - 1][x1 - 1]:
-            if 0 < x <= 6 and 0 < y <= 6 and self.je_prosto(x, y):
-                if (abs(x1 - x) == 1 and y == y1) or (abs(y1 - y) == 1 and x1 == x) or ((abs(x1 - x) == 2 and y == y1) and not self.je_prosto(min(x, x1) + 1, y)) or\
-                   ((y1 - y) == 2 and x1 == x) and not self.je_prosto(x, min(y, y1) + 1):
-                    self.plosca[y1 - 1][x1 - 1] = ' '
-                    self.plosca[y - 1][x - 1] = self.igralec
-                    self.poteze -= 1
-                    if self.poteze == 0:
-                        self.poteze = 3
-                        if self.igralec == 'X':
-                            self.igralec = 'O'
-                        else:
-                            self.igralec = 'X'
+    def prestavi_figuro(self, x, y):
+        if self.izbrana_figura:
+            x1, y1 = self.izbrana_figura
+            if self.igralec == self.plosca[y1][x1]:
+                if 0 <= x < self.sirina and 0 <= y < self.visina and self.je_prosto(x, y):
+                    if (abs(x1 - x) == 1 and y == y1) or (abs(y1 - y) == 1 and x1 == x) or ((abs(x1 - x) == 2 and y == y1) and not self.je_prosto(min(x, x1) + 1, y)) or\
+                    ((y1 - y) == 2 and x1 == x) and not self.je_prosto(x, min(y, y1) + 1):
+                        self.plosca[y1][x1] = ' '
+                        self.plosca[y][x] = self.igralec
+                        self.poteze -= 1
+                        self.izbrana_figura = None
+                        if self.poteze == 0:
+                            self.poteze = 3
+                            if self.igralec == 'X':
+                                self.igralec = 'O'
+                            else:
+                                self.igralec = 'X'
+                    else:
+                        return 'NEVELJAVNA POTEZA'
                 else:
                     return 'NEVELJAVNA POTEZA'
-            else:
-                return 'NEVELJAVNA POTEZA'
         else:
             return 'Na potezi je drugi igralec!'
 
@@ -70,7 +82,7 @@ class Plosca:
         for i in range(self.visina):
             for j in range(self.sirina):
                 if self.plosca[i][j] == igralec:
-                    sez.update((j + 1, i + 1))
+                    sez.update((j, i))
         return sez
 
     def zmaga(self, igralec):
@@ -80,3 +92,5 @@ class Plosca:
             return True
         else:
             return False
+
+plosca = Plosca()
