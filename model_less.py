@@ -20,16 +20,16 @@ class Plosca:
         self.sirina = sirina
         self.poteze = 3
         self.plosca = [[' '] * self.visina for _ in range(self.sirina)]
-        self.igralec = 'O'
+        self.igralec = '0'
         self.izbrana_figura = None
         self.belefigure = []
         self.crnefigure = []
         for vrstica, stolpec in ZACETNAPOLJABELI:
-            self.plosca[vrstica][stolpec] = '0'
-            self.belefigure.append((stolpec, vrstica))
+            self.plosca[stolpec][vrstica] = '0'
+            self.belefigure.append((vrstica, stolpec))
         for vrstica, stolpec in ZACETNAPOLJACRNI:
-            self.plosca[vrstica][stolpec] = 'X'
-            self.crnefigure.append((stolpec, vrstica))
+            self.plosca[stolpec][vrstica] = 'X'
+            self.crnefigure.append((vrstica, stolpec))
 
 
 
@@ -47,10 +47,10 @@ class Plosca:
         return rob + niz + rob + ' 123456'
 
     def je_prosto(self, x, y):
-        return self.plosca[x][y] == ' '
+        return self.plosca[y][x] == ' '
 
     def izberi_figuro(self, x, y):
-        if not self.izbrana_figura and self.igralec == self.plosca[y][x]:
+        if self.izbrana_figura is None and self.igralec == self.plosca[y][x]:
             self.izbrana_figura = (x, y)
 
     def prestavi_figuro(self, x, y):
@@ -58,37 +58,33 @@ class Plosca:
             x1, y1 = self.izbrana_figura
             if self.igralec == self.plosca[y1][x1]:
                 if 0 <= x < self.sirina and 0 <= y < self.visina and self.je_prosto(x, y):
-                    if (abs(x1 - x) == 1 and y == y1) or (abs(y1 - y) == 1 and x1 == x) or ((abs(x1 - x) == 2 and y == y1) and not self.je_prosto(min(x, x1) + 1, y)) or\
-                    ((y1 - y) == 2 and x1 == x) and not self.je_prosto(x, min(y, y1) + 1):
+                    if (abs(x1 - x) == 1 and y == y1) or (abs(y1 - y) == 1 and x1 == x) or (abs(x1 - x) == 2 and y == y1 and not self.je_prosto(min(x, x1) + 1, y)) or\
+                    ((y1 - y) == 2 and x1 == x and not self.je_prosto(x, min(y, y1) + 1)):
                         self.plosca[y1][x1] = ' '
                         self.plosca[y][x] = self.igralec
                         self.poteze -= 1
                         self.izbrana_figura = None
+                        if self.igralec == '0':
+                            self.belefigure.remove((x1, y1))
+                            self.belefigure.append((x, y))
+                        else:
+                            self.crnefigure.remove((x1, y1))
+                            self.crnefigure.append((x, y))
+
                         if self.poteze == 0:
                             self.poteze = 3
                             if self.igralec == 'X':
-                                self.igralec = 'O'
+                                self.igralec = '0'
                             else:
                                 self.igralec = 'X'
-                    else:
-                        return 'NEVELJAVNA POTEZA'
-                else:
-                    return 'NEVELJAVNA POTEZA'
-        else:
-            return 'Na potezi je drugi igralec!'
 
-    def zaseda_polja(self, igralec):
-        sez = set()
-        for i in range(self.visina):
-            for j in range(self.sirina):
-                if self.plosca[i][j] == igralec:
-                    sez.update((j, i))
-        return sez
 
-    def zmaga(self, igralec):
-        if igralec == 'O' and ZACETNAPOLJACRNI == self.zaseda_polja(igralec):
+
+
+    def zmaga(self):
+        if ZACETNAPOLJACRNI == set(self.belefigure):
             return True
-        elif igralec == 'X' and ZACETNAPOLJABELI == self.zaseda_polja(igralec):
+        elif ZACETNAPOLJABELI == set(self.crnefigure):
             return True
         else:
             return False
