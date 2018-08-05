@@ -59,7 +59,7 @@ class Plosca:
             if self.igralec == self.plosca[y1][x1]:
                 if 0 <= x < self.sirina and 0 <= y < self.visina and self.je_prosto(x, y):
                     if (abs(x1 - x) == 1 and y == y1) or (abs(y1 - y) == 1 and x1 == x) or (abs(x1 - x) == 2 and y == y1 and not self.je_prosto(min(x, x1) + 1, y)) or\
-                    ((y1 - y) == 2 and x1 == x and not self.je_prosto(x, min(y, y1) + 1)):
+                    (abs(y1 - y) == 2 and x1 == x and not self.je_prosto(x, min(y, y1) + 1)):
                         self.plosca[y1][x1] = ' '
                         self.plosca[y][x] = self.igralec
                         self.poteze -= 1
