@@ -1,4 +1,4 @@
-BELA, CRNA = 'bela', 'crna'
+BELI, CRNI = '0', 'X'
 
 class Figura:
 
@@ -13,6 +13,8 @@ class Figura:
 ZACETNAPOLJABELI = {(0, 0), (1, 0), (0, 1), (1, 1)}
 ZACETNAPOLJACRNI = {(5, 5), (5, 4), (4, 5), (4, 4)}
 
+import random
+
 class Plosca:
 
     def __init__(self, visina=6, sirina=6):
@@ -20,22 +22,30 @@ class Plosca:
         self.sirina = sirina
         self.poteze = 3
         self.plosca = [[' '] * self.visina for _ in range(self.sirina)]
-        self.igralec = '0'
+        self.igralec = BELI
+        self.skupnepoteze = 0
         self.izbrana_figura = None
+        self.skok = 1
         self.belefigure = []
         self.crnefigure = []
+        self.ovire = []
         for vrstica, stolpec in ZACETNAPOLJABELI:
-            self.plosca[stolpec][vrstica] = '0'
+            self.plosca[stolpec][vrstica] = BELI
             self.belefigure.append((vrstica, stolpec))
         for vrstica, stolpec in ZACETNAPOLJACRNI:
-            self.plosca[stolpec][vrstica] = 'X'
+            self.plosca[stolpec][vrstica] = CRNI
             self.crnefigure.append((vrstica, stolpec))
+        while len(self.ovire) < 6:
+            c = random.randint(0, 5)
+            d = random.randint(0, 5)
+            if (c, d) not in self.ovire:
+                self.ovire.append((c, d))
 
 
 
     def __repr__(self):
-        return 'Plosca(visina={}, sirina={}, belefigure={}, crnefigure={})'.format(
-            self.visina, self.sirina, self.belefigure, self.crnefigure
+        return 'Plosca(visina={}, sirina={}, belefigure={}, crnefigure={}, ovire)'.format(
+            self.visina, self.sirina, self.belefigure, self.crnefigure, self.ovire
         )
 
     def __str__(self):
@@ -53,30 +63,56 @@ class Plosca:
         if self.izbrana_figura is None and self.igralec == self.plosca[y][x]:
             self.izbrana_figura = (x, y)
 
-    def prestavi_figuro(self, x, y):
-        if self.izbrana_figura:
-            x1, y1 = self.izbrana_figura
-            if self.igralec == self.plosca[y1][x1]:
-                if 0 <= x < self.sirina and 0 <= y < self.visina and self.je_prosto(x, y):
-                    if (abs(x1 - x) == 1 and y == y1) or (abs(y1 - y) == 1 and x1 == x) or (abs(x1 - x) == 2 and y == y1 and not self.je_prosto(min(x, x1) + 1, y)) or\
-                    (abs(y1 - y) == 2 and x1 == x and not self.je_prosto(x, min(y, y1) + 1)):
-                        self.plosca[y1][x1] = ' '
-                        self.plosca[y][x] = self.igralec
-                        self.poteze -= 1
-                        self.izbrana_figura = None
-                        if self.igralec == '0':
-                            self.belefigure.remove((x1, y1))
-                            self.belefigure.append((x, y))
-                        else:
-                            self.crnefigure.remove((x1, y1))
-                            self.crnefigure.append((x, y))
+    def menjava_igralca(self):
+        if self.poteze == 0:
+            self.poteze = 3
+            if self.igralec == CRNI:
+                self.igralec = BELI
+            else:
+                self.igralec = CRNI
 
-                        if self.poteze == 0:
-                            self.poteze = 3
-                            if self.igralec == 'X':
-                                self.igralec = '0'
-                            else:
-                                self.igralec = 'X'
+    def figura_se_lahko_prestavi(self, x1, y1, x, y):
+        if abs(x1 - x) == 1 and y == y1 or abs(y1 - y) == 1 and x == x1:
+            if (x, y) in self.ovire:
+                self.skok = 2
+                return self.poteze - self.skok >= 0
+            return True
+        elif abs(x1 - x) == 2 and y == y1 and not self.je_prosto(min(x, x1) + 1, y):
+            if (x, y) in self.ovire or (min(x, x1) + 1, y) in self.ovire:
+                return False
+            else:
+                return True
+        elif abs(y1 - y) == 2 and x1 == x and not self.je_prosto(x, min(y, y1) + 1):
+            if (x, y) in self.ovire or (x, min(y, y1) + 1) in self.ovire:
+                return False
+            else:
+                return True
+        else:
+            return False
+
+
+    def je_v_polju(self, x, y):
+        return 0 <= x < self.sirina and 0 <= y < self.visina
+
+
+    def prestavi_figuro(self, x, y):
+        if self.izbrana_figura and self.je_v_polju(x, y) and self.je_prosto(x, y):
+            x1, y1 = self.izbrana_figura
+            if self.figura_se_lahko_prestavi(x1, y1, x, y):
+                self.plosca[y1][x1] = ' '
+                self.plosca[y][x] = self.igralec
+                self.poteze -= self.skok
+                self.skupnepoteze += self.skok
+                self.izbrana_figura = None
+                if self.igralec == BELI:
+                    self.belefigure.remove((x1, y1))
+                    self.belefigure.append((x, y))
+                else:
+                    self.crnefigure.remove((x1, y1))
+                    self.crnefigure.append((x, y))
+                self.skok = 1
+                self.menjava_igralca()
+
 
 
 

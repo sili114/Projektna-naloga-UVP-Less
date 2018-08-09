@@ -34,6 +34,8 @@ class Vmesnik:
             self.gumbi[stolpec][vrstica].config(text='0', state='active')
         for vrstica, stolpec in self.igra.crnefigure:
             self.gumbi[stolpec][vrstica].config(text='X', state='active')
+        for vrstica, stolpec in self.igra.ovire:
+            self.gumbi[stolpec][vrstica].config(borderwidth= 5)
         self.osvezi_polje_po_potezi()
 
     def zakljuci(self):
