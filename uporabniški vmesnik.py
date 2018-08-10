@@ -12,11 +12,15 @@ class Vmesnik:
         self.obvestilo = tk.Label(okno, text='Pozdravljen v igri Less')
         self.obvestilo.grid(row=0, column=0)
 
-        self.slednik_igralev = tk.Label(okno, text='Na potezi je igralec: ' + str(model_less.plosca.igralec))
-        self.slednik_igralev.grid(row=1, column=0)
 
-        self.stevec_potez = tk.Label(okno, text='Preostalo število potez: ' + str(model_less.plosca.poteze))
-        self.stevec_potez.grid(row=1, column=1)
+        self.slednik_igralev = tk.Label(okno,text= str(model_less.plosca.igralec))
+        self.slednik_igralev.grid(row=1, column=1)
+
+        tk.Label(okno, text='Na potezi je igralec:').grid(row=1, column=0)
+        tk.Label(okno, text='Preostalo število potez:').grid(row=1, column=2)
+
+        self.stevec_potez = tk.Label(okno, text=str(model_less.plosca.poteze))
+        self.stevec_potez.grid(row=1, column=3)
 
         prikaz_plosce = tk.Frame(okno)
         self.gumbi = []
@@ -62,9 +66,12 @@ class Vmesnik:
                     else:
                         self.gumbi[stolpec][vrstica].config(text=' ',state='disabled')
         if self.igra.zmaga():
-            self.slednik_igralev.config(text='ZMAGA')
+            self.obvestilo.config(text='ZMAGA IGRALCA: ' + str(self.igra.igralec))
             self.zakljuci()
-            glavna_zanka()
+        elif self.igra.testni:
+            self.osvezi_polje_po_potezi()
+
+
 
 
     def osvezi_polje_po_izbiri_figure(self):
@@ -80,7 +87,6 @@ class Vmesnik:
 
     def premakni(self, vrstica, stolpec):
         if self.igra.izbrana_figura:
-            x, y = self.igra.izbrana_figura
             self.igra.prestavi_figuro(stolpec, vrstica)
             if not self.igra.izbrana_figura:
                 self.stevec_potez.config(text=str(self.igra.poteze))
