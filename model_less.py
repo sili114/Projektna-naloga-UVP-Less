@@ -29,6 +29,7 @@ class Plosca:
         self.belefigure = []
         self.crnefigure = []
         self.ovire = []
+        self.testni = False
         for vrstica, stolpec in ZACETNAPOLJABELI:
             self.plosca[stolpec][vrstica] = BELI
             self.belefigure.append((vrstica, stolpec))
@@ -36,8 +37,8 @@ class Plosca:
             self.plosca[stolpec][vrstica] = CRNI
             self.crnefigure.append((vrstica, stolpec))
         while len(self.ovire) < 6:
-            c = random.randint(0, 5)
-            d = random.randint(0, 5)
+            c = random.randint(1, 4)
+            d = random.randint(1, 4)
             if (c, d) not in self.ovire:
                 self.ovire.append((c, d))
 
@@ -119,7 +120,13 @@ class Plosca:
 
     def zmaga(self):
         if ZACETNAPOLJACRNI == set(self.belefigure):
-            return True
+            if self.testni:
+                return True
+            else:
+                self.testni = True
+                self.igralec = 'X'
+                self.poteze = 3 - self.poteze
+                return False
         elif ZACETNAPOLJABELI == set(self.crnefigure):
             return True
         else:
