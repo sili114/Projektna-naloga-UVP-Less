@@ -23,12 +23,12 @@ class Plosca:
         self.poteze = 3
         self.plosca = [[' '] * self.visina for _ in range(self.sirina)]
         self.igralec = BELI
-        self.skupnepoteze = 0
         self.izbrana_figura = None
         self.skok = 1
         self.belefigure = []
         self.crnefigure = []
         self.ovire = []
+        self.zmagovalec = None
         self.testni = False
         for vrstica, stolpec in ZACETNAPOLJABELI:
             self.plosca[stolpec][vrstica] = BELI
@@ -103,7 +103,6 @@ class Plosca:
                 self.plosca[y1][x1] = ' '
                 self.plosca[y][x] = self.igralec
                 self.poteze -= self.skok
-                self.skupnepoteze += self.skok
                 self.izbrana_figura = None
                 if self.igralec == BELI:
                     self.belefigure.remove((x1, y1))
@@ -119,16 +118,21 @@ class Plosca:
 
 
     def zmaga(self):
-        if ZACETNAPOLJACRNI == set(self.belefigure):
-            if self.testni:
+        if ZACETNAPOLJACRNI == set(self.belefigure) and ZACETNAPOLJABELI == set(self.crnefigure) and self.poteze == 0:
+            return None
+        elif ZACETNAPOLJABELI == set(self.crnefigure):
+            self.zmagovalec = 'X'
+            return True
+        elif ZACETNAPOLJACRNI == set(self.belefigure):
+            if self.testni and self.poteze == 3:
+                self.zmagovalec = '0'
                 return True
             else:
                 self.testni = True
                 self.igralec = 'X'
                 self.poteze = 3 - self.poteze
                 return False
-        elif ZACETNAPOLJABELI == set(self.crnefigure):
-            return True
+
         else:
             return False
 
