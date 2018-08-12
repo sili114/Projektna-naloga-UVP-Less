@@ -124,13 +124,14 @@ class Plosca:
             self.zmagovalec = 'X'
             return True
         elif ZACETNAPOLJACRNI == set(self.belefigure):
-            if self.testni and self.poteze == 3:
+            if self.testni and self.poteze == 3 and self.igralec =='0':
                 self.zmagovalec = '0'
                 return True
             elif not self.testni:
                 self.testni = True
                 self.igralec = 'X'
-                self.poteze = 3 - self.poteze
+                if not self.poteze == 3:
+                    self.poteze = 3 - self.poteze
                 return False
             else:
                 return False
