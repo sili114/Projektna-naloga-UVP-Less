@@ -127,12 +127,13 @@ class Plosca:
             if self.testni and self.poteze == 3:
                 self.zmagovalec = '0'
                 return True
-            else:
+            elif not self.testni:
                 self.testni = True
                 self.igralec = 'X'
                 self.poteze = 3 - self.poteze
                 return False
-
+            else:
+                return False
         else:
             return False
 
