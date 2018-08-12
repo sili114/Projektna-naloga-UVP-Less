@@ -29,7 +29,7 @@ class Vmesnik:
             for stolpec in range(self.igra.sirina):
                 def pritisni_gumb(vrstica=vrstica, stolpec=stolpec):
                     self.premakni(vrstica, stolpec)
-                gumb = tk.Button(prikaz_plosce, text='', height=1, width=1, command=pritisni_gumb, state='disabled')
+                gumb = tk.Button(prikaz_plosce, text='', height=3, width=3, command=pritisni_gumb, state='disabled')
                 gumb.grid(row=vrstica, column=stolpec)
                 vrstica_gumbov.append(gumb)
             self.gumbi.append(vrstica_gumbov)
@@ -65,12 +65,34 @@ class Vmesnik:
                         self.gumbi[stolpec][vrstica].config(text='0',state='disabled')
                     else:
                         self.gumbi[stolpec][vrstica].config(text=' ',state='disabled')
-        if self.igra.zmaga():
-            self.obvestilo.config(text='ZMAGA IGRALCA: ' + str(self.igra.igralec))
-            self.zakljuci()
-        elif self.igra.testni:
-            self.osvezi_polje_po_potezi()
+        self.preveri_ce_je_kdo_zmagal()
+        if not self.igra.zmaga():
+            for vrstica in range(self.igra.visina):
+                for stolpec in range(self.igra.sirina):
+                    if self.igra.igralec == '0':
+                        if (vrstica, stolpec) in self.igra.belefigure:
+                            self.gumbi[stolpec][vrstica].config(text='0', state='active')
+                        elif (vrstica, stolpec) in self.igra.crnefigure:
+                            self.gumbi[stolpec][vrstica].config(text='X',state='disabled')
+                        else:
+                            self.gumbi[stolpec][vrstica].config(text=' ',state='disabled')
+                    else:
+                        if (vrstica, stolpec) in self.igra.crnefigure:
+                            self.gumbi[stolpec][vrstica].config(text='X', state='active')
+                        elif (vrstica, stolpec) in self.igra.belefigure:
+                            self.gumbi[stolpec][vrstica].config(text='0',state='disabled')
+                        else:
+                            self.gumbi[stolpec][vrstica].config(text=' ',state='disabled')
 
+
+
+    def preveri_ce_je_kdo_zmagal(self):
+        if self.igra.zmaga():
+            self.obvestilo.config(text='ZMAGA IGRALCA: ' + str(self.igra.zmagovalec))
+            self.zakljuci()
+        elif self.igra.zmaga() == None:
+            self.obvestilo.config(text='NEODLOČENO')
+            self.zakljuci()
 
 
 
