@@ -1,15 +1,5 @@
 BELI, CRNI = '0', 'X'
 
-class Figura:
-
-    def __init__(self, x, y, barva):
-        self.x = x
-        self.y = y
-        self.barva = barva
-
-    def __str__(self):
-        return '{0} figura na polju ({1}, {2})'.format(self.barva, self.x, self.y)
-
 ZACETNAPOLJABELI = {(0, 0), (1, 0), (0, 1), (1, 1)}
 ZACETNAPOLJACRNI = {(5, 5), (5, 4), (4, 5), (4, 4)}
 
@@ -37,15 +27,15 @@ class Plosca:
             self.plosca[stolpec][vrstica] = CRNI
             self.crnefigure.append((vrstica, stolpec))
         while len(self.ovire) < 6:
-            c = random.randint(1, 4)
-            d = random.randint(1, 4)
+            c = random.randint(0, 5)
+            d = random.randint(0, 5)
             if (c, d) not in self.ovire:
                 self.ovire.append((c, d))
 
 
 
     def __repr__(self):
-        return 'Plosca(visina={}, sirina={}, belefigure={}, crnefigure={}, ovire)'.format(
+        return 'Plosca(visina={}, sirina={}, belefigure={}, crnefigure={}, ovire={})'.format(
             self.visina, self.sirina, self.belefigure, self.crnefigure, self.ovire
         )
 
@@ -65,7 +55,7 @@ class Plosca:
             self.izbrana_figura = (x, y)
 
     def menjava_igralca(self):
-        if self.poteze == 0:
+        if self.poteze <= 0:
             self.poteze = 3
             if self.igralec == CRNI:
                 self.igralec = BELI
@@ -114,22 +104,27 @@ class Plosca:
                 self.menjava_igralca()
 
 
+    def resetiraj_izbiro_figure(self):
+        self.izbrana_figura = None
 
+
+    def resetiraj_igro(self):
+        self.__init__()
 
 
     def zmaga(self):
-        if ZACETNAPOLJACRNI == set(self.belefigure) and ZACETNAPOLJABELI == set(self.crnefigure) and self.poteze == 0:
+        if ZACETNAPOLJACRNI == set(self.belefigure) and ZACETNAPOLJABELI == set(self.crnefigure) and self.poteze == 3:
             return None
         elif ZACETNAPOLJABELI == set(self.crnefigure):
-            self.zmagovalec = 'X'
+            self.zmagovalec = CRNI
             return True
         elif ZACETNAPOLJACRNI == set(self.belefigure):
-            if self.testni and self.poteze == 3 and self.igralec =='0':
-                self.zmagovalec = '0'
+            if self.testni and self.poteze == 3 and self.igralec ==BELI:
+                self.zmagovalec = BELI
                 return True
             elif not self.testni:
                 self.testni = True
-                self.igralec = 'X'
+                self.igralec = CRNI
                 if not self.poteze == 3:
                     self.poteze = 3 - self.poteze
                 return False
