@@ -65,21 +65,32 @@ class Plosca:
     def figura_se_lahko_prestavi(self, x1, y1, x, y):
         if abs(x1 - x) == 1 and y == y1 or abs(y1 - y) == 1 and x == x1:
             if (x, y) in self.ovire:
-                self.skok = 2
-                return self.poteze - self.skok >= 0
+                if self.poteze - 2 >= 0:
+                    self.skok = 2
+                    return True
+                return False
             return True
         elif abs(x1 - x) == 2 and y == y1 and not self.je_prosto(min(x, x1) + 1, y):
-            if (x, y) in self.ovire or (min(x, x1) + 1, y) in self.ovire:
-                return False
-            else:
-                return True
+            return not ((x, y) in self.ovire or (min(x, x1) + 1, y) in self.ovire)
         elif abs(y1 - y) == 2 and x1 == x and not self.je_prosto(x, min(y, y1) + 1):
-            if (x, y) in self.ovire or (x, min(y, y1) + 1) in self.ovire:
-                return False
-            else:
-                return True
+            return not((x, y) in self.ovire or (x, min(y, y1) + 1) in self.ovire)
         else:
             return False
+
+
+    def polja_na_voljo(self):
+        polja = []
+        if self.izbrana_figura:
+            x, y = self.izbrana_figura
+            opcija = [(x, y + 1), (x, y + 2), (x, y - 1), (x, y - 2), (x + 1, y), (x + 2, y), (x - 1, y), (x - 2, y)]
+            for x1, y1 in opcija:
+                if self.je_v_polju(x1, y1):
+                    if self.figura_se_lahko_prestavi(x, y, x1, y1) and self.je_prosto(x1, y1):
+                        polja.append((x1, y1))
+        self.skok = 1
+        return polja
+
+
 
 
     def je_v_polju(self, x, y):
