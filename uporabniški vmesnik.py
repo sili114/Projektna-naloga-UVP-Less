@@ -116,8 +116,8 @@ class Vmesnik:
     def osvezi_polje_po_izbiri_figure(self):
         for vrstica in range(self.igra.visina):
             for stolpec in range(self.igra.sirina):
-                if (vrstica, stolpec) not in self.igra.belefigure and (vrstica, stolpec) not in self.igra.crnefigure:
-                    self.gumbi[stolpec][vrstica].config(state='active')
+                if (vrstica, stolpec) in self.igra.polja_na_voljo():
+                    self.gumbi[stolpec][vrstica].config(state='active', text='SEM')
                 else:
                     self.gumbi[stolpec][vrstica].config(state='disabled')
 
